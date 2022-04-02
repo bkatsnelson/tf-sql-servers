@@ -46,7 +46,13 @@ variable "dba_team_members" {
 variable "audit_storage_account_url" {
   type = string
 }
-variable "audit_storage_account_key" {
+variable "diag_storage_account_url" {
+  type = string
+}
+variable "diag_storage_account_key" {
+  type = string
+}
+variable "diag_storage_account_name" {
   type = string
 }
 #----------------------------------------------------------------------

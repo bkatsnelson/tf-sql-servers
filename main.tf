@@ -27,6 +27,7 @@ provider "azurerm" {
   subscription_id            = var.subscription_id
   tenant_id                  = var.tenant_id
   skip_provider_registration = true
+  storage_use_azuread        = true
 }
 
 #---------------------------------------------------------------------------------
@@ -71,23 +72,29 @@ module "storage_accounts" {
 module "sql_servers" {
   source = "./modules/sql_servers"
 
-  location                  = var.location
-  loc_acronym               = local.loc_acronym
-  resource_group_name       = azurerm_resource_group.rg_sql_database.name
-  environment               = var.environment
-  company                   = var.company
-  app                       = var.app
-  sql_admin_name            = var.sql_admin_groups[local.environment_group]
-  sql_admin_id              = var.sql_admin_groups_id[local.environment_group]
-  dba_team_members          = var.dba_team_members
-  diag_storage_account_id   = module.storage_accounts.diag_storage_account_id
+  location            = var.location
+  loc_acronym         = local.loc_acronym
+  resource_group_name = azurerm_resource_group.rg_sql_database.name
+  environment         = var.environment
+  company             = var.company
+  app                 = var.app
+  // Default Values to Use
+  default_sku  = var.default_sku
+  default_CPUs = var.default_CPUs
+  // Admin Info 
+  sql_admin_name       = var.sql_admin_groups[local.environment_group]
+  sql_admin_id         = var.sql_admin_groups_id[local.environment_group]
+  dba_team_members     = var.dba_team_members
+  authorized_ip_ranges = var.authorized_ip_ranges
+  // Storage Account info
   audit_storage_account_id  = module.storage_accounts.audit_storage_account_id
   audit_storage_account_url = module.storage_accounts.audit_storage_account_url
-  audit_storage_account_key = module.storage_accounts.audit_storage_account_key
-  default_sku               = var.default_sku
-  default_CPUs              = var.default_CPUs
-  authorized_ip_ranges      = var.authorized_ip_ranges
-  tags                      = local.tags
+  diag_storage_account_id   = module.storage_accounts.diag_storage_account_id
+  diag_storage_account_url  = module.storage_accounts.diag_storage_account_url
+  diag_storage_account_key  = module.storage_accounts.diag_storage_account_key
+  diag_storage_account_name = module.storage_accounts.diag_storage_account_name
+  // Provide Tags for Resources
+  tags = local.tags
 }
 
 #---------------------------------------------------------------------------------
