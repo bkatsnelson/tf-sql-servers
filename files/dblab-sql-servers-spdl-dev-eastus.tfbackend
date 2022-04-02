@@ -1,0 +1,6 @@
+resource_group_name  = "cloud-shell-storage-eastus"
+storage_account_name = "stsmbcllabbkatsnelsonuse"
+container_name       = "tf-sql-servers"
+key                  = "terraform.state.spenddatalake.dev.eastus2"
+subscription_id      = "a57c592f-99a2-47b4-a046-bbc696cc98f7"
+tenant_id            = "032c0190-9b24-49f2-b7fc-27fad11e8caa"

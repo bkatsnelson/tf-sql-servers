@@ -1,0 +1,6 @@
+resource_group_name  = "rg-cloud-shell-nonprod-use2"
+storage_account_name = "stsmbciadterraformuse2"
+container_name       = "tf-sql-servers"
+key                  = "terraform.state.archer.dev.eastus2"
+subscription_id      = "d58fbfba-be42-4145-9b37-31fd8cf19dc1"
+tenant_id            = "c7f6413d-1e73-45d2-b0da-a68713b515a7"

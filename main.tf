@@ -1,0 +1,95 @@
+##################################################################################
+#
+# Description: Maintain Azure SQL Database Resources 
+#
+#
+# Author: Boris Katsnelson
+#   Date: 03/2022
+#
+##################################################################################
+
+#---------------------------------------------------------------------------------
+# Configure the Azure provider
+#---------------------------------------------------------------------------------
+
+terraform {
+  required_providers {
+    azurerm = {
+      source  = "hashicorp/azurerm"
+      version = "~>2.0"
+    }
+  }
+  backend "azurerm" {}
+}
+
+provider "azurerm" {
+  features {}
+  subscription_id            = var.subscription_id
+  tenant_id                  = var.tenant_id
+  skip_provider_registration = true
+}
+
+#---------------------------------------------------------------------------------
+# Define Local Variables
+#---------------------------------------------------------------------------------
+
+locals {
+  loc_acronym          = var.loc_acronym_map[var.location]
+  environment_group    = var.environment == "prod" ? "prod" : "nonprod"
+  sql_admin_group_name = var.sql_admin_groups[local.environment_group]
+
+  tags = {
+    "Department"  = var.department
+    "Owner"       = var.owner
+    "Environment" = var.environment == "qa" ? upper(var.environment) : title(var.environment)
+    "Cost_Center" = title(var.cost_center)
+  }
+
+}
+
+#---------------------------------------------------------------------------------
+# Create Storage Accounts
+#---------------------------------------------------------------------------------
+
+module "storage_accounts" {
+  source = "./modules/storage_accounts"
+
+  location                = var.location
+  loc_acronym             = local.loc_acronym
+  environment             = var.environment
+  resource_group_name     = azurerm_resource_group.rg_sql_database.name
+  subscription_short_name = var.subscription_short_name1
+  authorized_ip_ranges    = var.authorized_ip_ranges_list
+  tags                    = local.tags
+
+}
+
+#---------------------------------------------------------------------------------
+# Create Sql Servers
+#---------------------------------------------------------------------------------
+
+module "sql_servers" {
+  source = "./modules/sql_servers"
+
+  location                  = var.location
+  loc_acronym               = local.loc_acronym
+  resource_group_name       = azurerm_resource_group.rg_sql_database.name
+  environment               = var.environment
+  company                   = var.company
+  app                       = var.app
+  sql_admin_name            = var.sql_admin_groups[local.environment_group]
+  sql_admin_id              = var.sql_admin_groups_id[local.environment_group]
+  dba_team_members          = var.dba_team_members
+  diag_storage_account_id   = module.storage_accounts.diag_storage_account_id
+  audit_storage_account_id  = module.storage_accounts.audit_storage_account_id
+  audit_storage_account_url = module.storage_accounts.audit_storage_account_url
+  audit_storage_account_key = module.storage_accounts.audit_storage_account_key
+  default_sku               = var.default_sku
+  default_CPUs              = var.default_CPUs
+  authorized_ip_ranges      = var.authorized_ip_ranges
+  tags                      = local.tags
+}
+
+#---------------------------------------------------------------------------------
+# End of Script
+#---------------------------------------------------------------------------------
