@@ -55,6 +55,9 @@ variable "diag_storage_account_key" {
 variable "diag_storage_account_name" {
   type = string
 }
+variable "action_group_id" {
+  type = string
+}
 #----------------------------------------------------------------------
 # Default Variables
 #----------------------------------------------------------------------
@@ -105,4 +108,34 @@ variable "daignostics_days" {
   type    = number
   default = 31
 }
+
+#-----------------------------------------------------------------------------
+# Default Database Metrics Thresholds
+#-----------------------------------------------------------------------------
+
+variable "cpu_utilization" {
+  type    = number
+  default = 75
+}
+variable "io_utilization" {
+  type    = number
+  default = 60
+}
+variable "log_io_utilization" {
+  type    = number
+  default = 60
+}
+variable "memory_utilization" {
+  type    = number
+  default = 80
+}
+variable "session_utilization" {
+  type    = number
+  default = 75
+}
+variable "space_utilization" {
+  type    = number
+  default = 75
+}
+
 

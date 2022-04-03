@@ -49,6 +49,19 @@ locals {
 }
 
 #---------------------------------------------------------------------------------
+# Create Action Groups
+#---------------------------------------------------------------------------------
+
+module "action_groups" {
+  source = "./modules/action_groups"
+
+  environment         = var.environment
+  resource_group_name = azurerm_resource_group.rg_sql_database.name
+  dba_team_members    = var.dba_team_members
+  tags                = local.tags
+}
+
+#---------------------------------------------------------------------------------
 # Create Storage Accounts
 #---------------------------------------------------------------------------------
 
@@ -81,10 +94,11 @@ module "sql_servers" {
   // Default Values to Use
   default_sku  = var.default_sku
   default_CPUs = var.default_CPUs
-  // Admin Info 
+  // Admin and Support Info 
   sql_admin_name       = var.sql_admin_groups[local.environment_group]
   sql_admin_id         = var.sql_admin_groups_id[local.environment_group]
   dba_team_members     = var.dba_team_members
+  action_group_id      = module.action_groups.dba_team_action_group_id
   authorized_ip_ranges = var.authorized_ip_ranges
   // Storage Account info
   audit_storage_account_id  = module.storage_accounts.audit_storage_account_id
