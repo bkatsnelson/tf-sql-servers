@@ -104,6 +104,7 @@ module "sql_servers" {
   location            = var.location
   loc_acronym         = local.loc_acronym
   resource_group_name = azurerm_resource_group.rg_sql_database.name
+  resource_group_id   = azurerm_resource_group.rg_sql_database.id
   environment         = var.environment
   company             = var.company
   app                 = var.app
