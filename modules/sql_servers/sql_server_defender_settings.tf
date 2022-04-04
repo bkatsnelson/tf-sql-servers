@@ -28,12 +28,12 @@ resource "azurerm_mssql_server_security_alert_policy" "sql_server_001_security_a
 #---------------------------------------------------------------------------
 
 resource "azurerm_storage_container" "diag_stroage_vulnerability_assessment_container" {
-  name                  = "vulnerability-assessment"
+  name                  = "${azurerm_mssql_server.sql_server_001.name}-vulnerability-assessment"
   storage_account_name  = var.diag_storage_account_name
   container_access_type = "private"
 }
 
-resource "azurerm_mssql_server_vulnerability_assessment" "example" {
+resource "azurerm_mssql_server_vulnerability_assessment" "sql_server_001_vulnerability_assessment" {
   server_security_alert_policy_id = azurerm_mssql_server_security_alert_policy.sql_server_001_security_alert_policy.id
   storage_container_path          = "${var.diag_storage_account_url}${azurerm_storage_container.diag_stroage_vulnerability_assessment_container.name}/"
 
@@ -42,4 +42,8 @@ resource "azurerm_mssql_server_vulnerability_assessment" "example" {
     email_subscription_admins = true
     emails                    = local.dba_team_members_emails
   }
+
+  depends_on = [
+    azurerm_storage_container.diag_stroage_vulnerability_assessment_container
+  ]
 }
