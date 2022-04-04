@@ -18,6 +18,8 @@ resource "azurerm_monitor_metric_alert" "sql_database_001_01i_high_cpu_alert" {
   action {
     action_group_id = var.action_group_id
   }
+
+  tags = var.tags
 }
 
 #--------------------------------------------------------------------------------------
@@ -40,6 +42,8 @@ resource "azurerm_monitor_metric_alert" "sql_database_001_01i_high_io_alert" {
   action {
     action_group_id = var.action_group_id
   }
+
+  tags = var.tags
 }
 
 #--------------------------------------------------------------------------------------
@@ -62,6 +66,8 @@ resource "azurerm_monitor_metric_alert" "sql_database_001_01i_high_log_io_alert"
   action {
     action_group_id = var.action_group_id
   }
+
+  tags = var.tags
 }
 
 #--------------------------------------------------------------------------------------
@@ -84,6 +90,8 @@ resource "azurerm_monitor_metric_alert" "sql_database_001_01i_high_memory_alert"
   action {
     action_group_id = var.action_group_id
   }
+
+  tags = var.tags
 }
 
 #--------------------------------------------------------------------------------------
@@ -106,6 +114,8 @@ resource "azurerm_monitor_metric_alert" "sql_database_001_01i_high_session_usage
   action {
     action_group_id = var.action_group_id
   }
+
+  tags = var.tags
 }
 
 #--------------------------------------------------------------------------------------
@@ -128,6 +138,8 @@ resource "azurerm_monitor_metric_alert" "sql_database_001_01i_high_space_alert" 
   action {
     action_group_id = var.action_group_id
   }
+
+  tags = var.tags
 }
 
 

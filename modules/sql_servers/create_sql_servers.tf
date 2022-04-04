@@ -71,9 +71,10 @@ resource "azurerm_role_assignment" "sql_server_001_blob_contributor_aud_assignme
 }
 
 resource "azurerm_mssql_server_extended_auditing_policy" "sql_server_001_auditing_policy" {
-  server_id         = azurerm_mssql_server.sql_server_001.id
-  storage_endpoint  = var.audit_storage_account_url
-  retention_in_days = var.audit_retention_days
+  server_id              = azurerm_mssql_server.sql_server_001.id
+  storage_endpoint       = var.audit_storage_account_url
+  log_monitoring_enabled = true
+  retention_in_days      = var.audit_retention_days
 
   depends_on = [
     azurerm_role_assignment.sql_server_001_blob_contributor_aud_assignment
@@ -81,47 +82,37 @@ resource "azurerm_mssql_server_extended_auditing_policy" "sql_server_001_auditin
 }
 
 #---------------------------------------------------------------------------
-# Enable SQL Server Security Alert Policy
+# Enable SQL Server Auditing to Log Analytics
 #---------------------------------------------------------------------------
 
-resource "azurerm_role_assignment" "sql_server_001_blob_contributor_diag_assignment" {
-  scope                = var.diag_storage_account_id
-  role_definition_name = "Storage Blob Data Contributor"
-  principal_id         = azurerm_mssql_server.sql_server_001.identity[0].principal_id
-}
+resource "azurerm_monitor_diagnostic_setting" "sql_server_001_audit_diags" {
+  name                       = "${azurerm_mssql_server.sql_server_001.name}-audit-diag"
+  target_resource_id         = "${azurerm_mssql_server.sql_server_001.id}/databases/master"
+  log_analytics_workspace_id = var.audit_log_analytics_workspace_id
 
-resource "azurerm_mssql_server_security_alert_policy" "sql_server_001_security_alert_policy" {
-  resource_group_name = var.resource_group_name
-  server_name         = azurerm_mssql_server.sql_server_001.name
-  state               = "Enabled"
+  log {
+    category = "SQLSecurityAuditEvents"
+    enabled  = true
 
-  email_account_admins = true
-  email_addresses      = local.dba_team_members_emails
-
-  retention_days = var.daignostics_days
-
-  depends_on = [
-    azurerm_role_assignment.sql_server_001_blob_contributor_diag_assignment
-  ]
-}
-
-#---------------------------------------------------------------------------
-# Enable SQL Server Vulnerability Assesment
-#---------------------------------------------------------------------------
-
-resource "azurerm_storage_container" "diag_stroage_vulnerability_assessment_container" {
-  name                  = "vulnerability-assessment"
-  storage_account_name  = var.diag_storage_account_name
-  container_access_type = "private"
-}
-
-resource "azurerm_mssql_server_vulnerability_assessment" "example" {
-  server_security_alert_policy_id = azurerm_mssql_server_security_alert_policy.sql_server_001_security_alert_policy.id
-  storage_container_path          = "${var.diag_storage_account_url}${azurerm_storage_container.diag_stroage_vulnerability_assessment_container.name}/"
-
-  recurring_scans {
-    enabled                   = true
-    email_subscription_admins = true
-    emails                    = local.dba_team_members_emails
+    retention_policy {
+      enabled = true
+      days    = var.audit_retention_days
+    }
   }
+
+  log {
+    category = "DevOpsOperationsAudit"
+    enabled  = true
+
+    retention_policy {
+      enabled = true
+      days    = var.audit_retention_days
+    }
+  }
+
+}
+
+resource "azurerm_mssql_database_extended_auditing_policy" "sql_server_001_auditing_policy_master_db" {
+  database_id            = "${azurerm_mssql_server.sql_server_001.id}/databases/master"
+  log_monitoring_enabled = true
 }

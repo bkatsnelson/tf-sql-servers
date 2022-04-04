@@ -79,6 +79,22 @@ module "storage_accounts" {
 }
 
 #---------------------------------------------------------------------------------
+# Create Log Analytics Workspaces
+#---------------------------------------------------------------------------------
+
+module "log_analytics_workspaces" {
+  source = "./modules/log_analytics_workspaces"
+
+  location                = var.location
+  loc_acronym             = local.loc_acronym
+  environment             = var.environment
+  resource_group_name     = azurerm_resource_group.rg_sql_database.name
+  subscription_short_name = var.subscription_short_name
+  diag_storage_account_id = module.storage_accounts.diag_storage_account_id
+  tags                    = local.tags
+}
+
+#---------------------------------------------------------------------------------
 # Create Sql Servers
 #---------------------------------------------------------------------------------
 
@@ -107,6 +123,9 @@ module "sql_servers" {
   diag_storage_account_url  = module.storage_accounts.diag_storage_account_url
   diag_storage_account_key  = module.storage_accounts.diag_storage_account_key
   diag_storage_account_name = module.storage_accounts.diag_storage_account_name
+  // Log Analytics Workspace Info
+  audit_log_analytics_workspace_id = module.log_analytics_workspaces.audit_log_analytics_workspace_001_id
+  diag_log_analytics_workspace_id  = module.log_analytics_workspaces.diag_log_analytics_workspace_001_id
   // Provide Tags for Resources
   tags = local.tags
 }

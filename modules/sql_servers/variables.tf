@@ -31,6 +31,12 @@ variable "diag_storage_account_id" {
 variable "audit_storage_account_id" {
   type = string
 }
+variable "audit_log_analytics_workspace_id" {
+  type = string
+}
+variable "diag_log_analytics_workspace_id" {
+  type = string
+}
 variable "authorized_ip_ranges" {
   type = map(any)
 }
@@ -88,13 +94,13 @@ variable "diag_log_categories" {
   default = {
     AutomaticTuning             = 31
     SQLInsights                 = 31
-    QueryStoreRuntimeStatistics = 1
-    QueryStoreWaitStatistics    = 1
-    Errors                      = 1
-    DatabaseWaitStatistics      = 1
-    Timeouts                    = 1
-    Blocks                      = 1
-    Deadlocks                   = 1
+    QueryStoreRuntimeStatistics = 31
+    QueryStoreWaitStatistics    = 31
+    Errors                      = 31
+    DatabaseWaitStatistics      = 31
+    Timeouts                    = 31
+    Blocks                      = 31
+    Deadlocks                   = 31
   }
 }
 

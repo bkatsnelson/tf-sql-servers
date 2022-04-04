@@ -44,9 +44,10 @@ resource "azurerm_mssql_database" "sql_database_001_01" {
 #---------------------------------------------------------------
 
 resource "azurerm_monitor_diagnostic_setting" "sql_database_001_01_storage_diagnostics" {
-  name               = "${azurerm_mssql_database.sql_database_001_01.name}-storage-diag"
-  target_resource_id = azurerm_mssql_database.sql_database_001_01.id
-  storage_account_id = var.diag_storage_account_id
+  name                       = "${azurerm_mssql_database.sql_database_001_01.name}-storage-diag"
+  target_resource_id         = azurerm_mssql_database.sql_database_001_01.id
+  storage_account_id         = var.diag_storage_account_id
+  log_analytics_workspace_id = var.audit_log_analytics_workspace_id
 
   dynamic "log" {
     for_each = var.diag_log_categories
